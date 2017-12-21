@@ -1,0 +1,87 @@
+---
+title: "Assignment 4_NCA"
+author: "Nirmaliz Colón-Acosta"
+date: "11/2/2017"
+output: html_document
+---
+
+```{r, Part I}
+Data <- read.csv("Assistments-confidence.csv")
+
+D1 <- Data[c(2:8)]
+
+View(D1)
+```
+
+
+
+
+``` {r}
+library(corrplot)
+
+COR <- cor(D1)
+
+corrplot(COR, order="AOE", method="circle", tl.pos="lt", type="upper",        
+tl.col="black", tl.cex=0.6, tl.srt=45, 
+        addCoef.col="black", addCoefasPercent = TRUE,
+        sig.level=0.50, insig = "blank")
+```
+
+```{r}
+D2 <- D1[c(1:3, 5:7)]
+
+View(D2)
+
+D2 <- scale(D2, center = TRUE)
+
+pca <- prcomp(D2, scale = TRUE)
+
+pca$sdev
+
+#To convert this into variance accounted for we can square it, these numbers are proportional to the eigenvalue
+
+pca$sdev^2
+
+#A summary of our pca will give us the proportion of variance accounted for by each component
+
+summary(pca)
+
+#We can look at this to get an idea of which components we should keep and which we should drop
+
+plot(pca, type = "lines")
+
+```
+
+```{r, Part II}
+D3 <- as.data.frame(pca$x)
+
+D4 <- cbind(D3, as.data.frame(D1$mean_correct))
+
+COR2 <- cor(D4)
+
+corrplot(COR2, order="AOE", method="circle", tl.pos="lt", type="upper",        
+tl.col="black", tl.cex=0.6, tl.srt=45, 
+        addCoef.col="black", addCoefasPercent = TRUE,
+        sig.level=0.50, insig = "blank")
+
+pca$rotation
+
+#Examine the eigenvectors, notice that they are a little difficult to interpret. It is much easier to make sense of them if we make them proportional within each component
+
+loadings <- abs(pca$rotation) #abs() will make all eigenvectors positive
+
+sweep(loadings, 2, colSums(loadings), "/") 
+  
+
+biplot(pca)
+
+#Calculate values for each student that represent these your composite variables and then create a new correlogram showing their relationship to mean_correct.
+
+pca$x
+
+Studs <- pca$x
+
+PCA_F <- 
+View(Studs)
+
+```
